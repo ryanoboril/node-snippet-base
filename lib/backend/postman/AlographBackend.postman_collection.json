@@ -1,0 +1,131 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Alograph Backend",
+		"_postman_id": "3d54d50d-0102-6107-6348-dd3960ef5501",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create patient",
+			"request": {
+				"url": "localhost:8080/patients",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":\"123\",\n    \"firstName\":\"Ryan\",\n    \"lastName\":\"Oboril\",\n    \"gender\":\"m\",\n    \"alopeciaType\":\"universalis\",\n    \"birthDate\":\"12-14-1977\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "create patient 2",
+			"request": {
+				"url": "localhost:8080/patients",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":\"456\",\n    \"firstName\":\"David\",\n    \"lastName\":\"Pumpkins\",\n    \"gender\":\"m\",\n    \"alopeciaType\":\"areata\",\n    \"birthDate\":\"6/9/1969\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "get patients",
+			"request": {
+				"url": "localhost:8080/patients",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":\"123\",\n    \"firstName\":\"Ryan\",\n    \"lastName\":\"Oboril\",\n    \"gender\":\"m\",\n    \"alopeciaType\":\"universalis\",\n    \"birthDate\":\"12-14-1977\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "get patient by id",
+			"request": {
+				"url": "localhost:8080/patients/123",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":\"123\",\n    \"firstName\":\"Ryan\",\n    \"lastName\":\"Oboril\",\n    \"gender\":\"m\",\n    \"alopeciaType\":\"universalis\",\n    \"birthDate\":\"12-14-1977\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "update patient",
+			"request": {
+				"url": "localhost:8080/patients/123",
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"lastName\":\"Sailor\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "delete patient",
+			"request": {
+				"url": "localhost:8080/patients/123",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

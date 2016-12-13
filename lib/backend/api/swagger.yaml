@@ -1,0 +1,483 @@
+---
+swagger: "2.0"
+info:
+  version: "0.1.0"
+  title: "CHOP Alopecia Backend API"
+schemes:
+- "https"
+paths:
+  /input:
+    post:
+      description: "Endpoint for submission of input images to the image processing\
+        \ algorithm hosted on the backend\n"
+      operationId: "inputPOST"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "patientId"
+        in: "formData"
+        description: "ID of patient"
+        required: true
+        type: "string"
+        maxLength: 128
+        minLength: 1
+      - name: "age"
+        in: "formData"
+        description: "age of patient"
+        required: true
+        type: "integer"
+        format: "int16"
+      - name: "takenDate"
+        in: "formData"
+        description: "date on which the photo was taken"
+        required: true
+        type: "string"
+        maxLength: 64
+        minLength: 1
+      - name: "viewId"
+        in: "formData"
+        description: "view type ID of image"
+        required: true
+        type: "string"
+        maxLength: 32
+        minLength: 1
+      - name: "photo"
+        in: "formData"
+        description: "masked input image"
+        required: true
+        type: "file"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Output"
+        400:
+          description: "Malformed request"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "Default"
+  /patients:
+    get:
+      description: "Searches for existing `Patient` objects.\n"
+      operationId: "patientsGET"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "firstName"
+        in: "query"
+        description: "String to be matched against patient first names"
+        required: false
+        type: "string"
+      - name: "lastName"
+        in: "query"
+        description: "String to be matched against patient last names"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Patients"
+        400:
+          description: "Malformed request"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "Default"
+    post:
+      description: "Creates new `Patient` object.\n"
+      operationId: "patientsPOST"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "patient"
+        description: "patient to add to the system"
+        required: true
+        schema:
+          $ref: "#/definitions/NewPatient"
+      responses:
+        201:
+          description: "Successful response, object was created"
+        400:
+          description: "Malformed request"
+          schema:
+            $ref: "#/definitions/Error"
+        409:
+          description: "Duplicate entry"
+      x-swagger-router-controller: "Default"
+  /patients/{id}:
+    get:
+      description: "Get `Patient` object by id.  If a `photo_start_date` is provided,\
+        \ a `photo_end_date` must also be provided.  The presence of these date parameters\
+        \ indicates that the photos for this patient should be inlcuded included in\
+        \ the response and should be constrained by the date range (including endpoint\
+        \ dates).\n"
+      operationId: "patientsIdGET"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "database ID of patient"
+        required: true
+        type: "string"
+      - name: "photo_start_date"
+        in: "query"
+        description: "Optionally include photos for this user starting with this date"
+        required: false
+        type: "string"
+      - name: "photo_end_date"
+        in: "query"
+        description: "Required if using photo_start date, the end date of the photo\
+          \ date range"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Patient"
+        404:
+          description: "Not Found"
+      x-swagger-router-controller: "Default"
+    delete:
+      description: "Destroy `Patient` object by id.\n"
+      operationId: "patientsIdDELETE"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "database ID of patient"
+        required: true
+        type: "string"
+      responses:
+        204:
+          description: "Successful response"
+        404:
+          description: "Not Found"
+      x-swagger-router-controller: "Default"
+    patch:
+      description: "Updates existing `Patient` object.\n"
+      operationId: "patientsIdPATCH"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "database ID of patient"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "patient"
+        required: false
+        schema:
+          $ref: "#/definitions/EditPatient"
+      responses:
+        204:
+          description: "Successful response, no content"
+        400:
+          description: "Malformed request"
+          schema:
+            $ref: "#/definitions/Error"
+        409:
+          description: "Duplicate entry"
+      x-swagger-router-controller: "Default"
+  /patients/{id}/photos:
+    get:
+      description: "Gets all photos for a patient.  If a `photo_start_date` is provided,\
+        \ a `photo_end_date` must also be provided and the photos in the response\
+        \ must be constrained by the date range (including endpoint dates).\n"
+      operationId: "patientsIdPhotosGET"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id of patient"
+        required: true
+        type: "string"
+      - name: "photo_start_date"
+        in: "query"
+        description: "Optionally include photos for this user starting with this date"
+        required: false
+        type: "string"
+      - name: "photo_end_date"
+        in: "query"
+        description: "Required if using photo_start date, the end date of the photo\
+          \ date range"
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Photos"
+        400:
+          description: "Malformed request"
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: "Not Found"
+      x-swagger-router-controller: "Default"
+    post:
+      description: "Creates new `Photo` object for specified `Patient` id.\n"
+      operationId: "patientsIdPhotosPOST"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id of patient"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "photo"
+        description: "photo to add for patient"
+        required: true
+        schema:
+          $ref: "#/definitions/Photo"
+      responses:
+        201:
+          description: "Successful response, object created"
+        404:
+          description: "Not Found"
+      x-swagger-router-controller: "Default"
+  /photos/{id}:
+    put:
+      description: "Replaces existing `Photo` object for specified `Patient` id.\n"
+      operationId: "photosIdPUT"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "id of photo"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "photo"
+        description: "photo to replace"
+        required: true
+        schema:
+          $ref: "#/definitions/Photo"
+      responses:
+        204:
+          description: "Successful response"
+        404:
+          description: "Not Found"
+      x-swagger-router-controller: "Default"
+    delete:
+      description: "Destroy `Photo` object by id.\n"
+      operationId: "photosIdDELETE"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "database ID of photo"
+        required: true
+        type: "string"
+      responses:
+        204:
+          description: "Successful response"
+        404:
+          description: "Not Found"
+      x-swagger-router-controller: "Default"
+  /salt/{date}:
+    get:
+      description: "Endpoint for retrieving the SALT score for a given set of images\
+        \ identified by the date they are taken.\n"
+      operationId: "saltDateGET"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "date"
+        in: "path"
+        description: "date that identifies the set of images"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/SaltScore"
+        404:
+          description: "Not Found"
+      x-swagger-router-controller: "Default"
+definitions:
+  Output:
+    type: "object"
+    properties:
+      viewId:
+        type: "string"
+      overlays:
+        type: "array"
+        items:
+          $ref: "#/definitions/Output_overlays"
+  SaltScore:
+    type: "object"
+    properties:
+      date:
+        type: "string"
+      score:
+        type: "number"
+        format: "double"
+  Error:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+  NewPatient:
+    type: "object"
+    required:
+    - "alopeciaType"
+    - "birthDate"
+    - "firstName"
+    - "gender"
+    - "id"
+    - "lastName"
+    properties:
+      id:
+        type: "string"
+        minLength: 1
+        maxLength: 128
+      firstName:
+        type: "string"
+        minLength: 1
+        maxLength: 256
+      lastName:
+        type: "string"
+        minLength: 1
+        maxLength: 256
+      gender:
+        type: "string"
+        minLength: 1
+        maxLength: 1
+      alopeciaType:
+        type: "string"
+        minLength: 1
+        maxLength: 64
+      birthDate:
+        type: "string"
+        minLength: 1
+        maxLength: 64
+  EditPatient:
+    type: "object"
+    properties:
+      firstName:
+        type: "string"
+        minLength: 1
+        maxLength: 256
+      lastName:
+        type: "string"
+        minLength: 1
+        maxLength: 256
+      gender:
+        type: "string"
+        minLength: 1
+        maxLength: 1
+      alopeciaType:
+        type: "string"
+        minLength: 1
+        maxLength: 64
+      birthDate:
+        type: "string"
+        minLength: 1
+        maxLength: 64
+  Patient:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      gender:
+        type: "string"
+      alopeciaType:
+        type: "string"
+      birthDate:
+        type: "string"
+      photos:
+        type: "array"
+        items:
+          $ref: "#/definitions/Photo"
+  Patients:
+    type: "object"
+    properties:
+      patients:
+        type: "array"
+        items:
+          $ref: "#/definitions/Patient"
+  Photo:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        minLength: 1
+        maxLength: 128
+      date:
+        type: "string"
+        minLength: 1
+        maxLength: 64
+      viewId:
+        type: "string"
+        minLength: 1
+        maxLength: 64
+      patientId:
+        type: "string"
+        minLength: 1
+        maxLength: 128
+      overlays:
+        type: "array"
+        items:
+          $ref: "#/definitions/Overlay"
+      saltScore:
+        type: "number"
+        format: "double"
+  Photos:
+    type: "object"
+    properties:
+      photos:
+        type: "array"
+        items:
+          $ref: "#/definitions/Photo"
+  Overlay:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        minLength: 1
+        maxLength: 128
+      photoId:
+        type: "string"
+        minLength: 1
+        maxLength: 128
+      name:
+        type: "string"
+        minLength: 1
+        maxLength: 128
+      score:
+        type: "number"
+        format: "double"
+  Output_overlays:
+    properties:
+      viewId:
+        type: "string"
+      scalpScore:
+        type: "number"
+        format: "double"
+      lowDensityScore:
+        type: "number"
+        format: "double"
+      normalScore:
+        type: "number"
+        format: "double"
+      imageUrl:
+        type: "string"
+        description: "download URL for image"
+      imageString:
+        type: "string"
+        description: "image as base64 encoded string"
